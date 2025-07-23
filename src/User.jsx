@@ -38,8 +38,8 @@ const Task = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
     try {
-      await axios.delete(`http://localhost:8000/api/task/${id}`);
-      setTasks(tasks.filter(task => task._id !== id)); // remove deleted from state
+      await axios.delete(`http://localhost:8000/api/delete/task/${id}`);
+      setTasks(tasks.filter(task => task._id !== id));
     } catch (error) {
       console.error("Error deleting task:", error);
     }

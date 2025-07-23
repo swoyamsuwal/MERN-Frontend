@@ -18,6 +18,23 @@ const Task = () => {
     fetchData();
   }, []);
 
+  // Toggle completed status handler
+  const toggleCompleted = async (taskId, currentCompleted) => {
+    try {
+      // Send PUT request to update completed status
+      await axios.put(`http://localhost:8000/api/update/task/${taskId}`, {
+        completed: !currentCompleted
+      });
+
+      // Update local state so UI reflects change immediately
+      setTasks(tasks.map(task => 
+        task._id === taskId ? { ...task, completed: !currentCompleted } : task
+      ));
+    } catch (error) {
+      console.error("Error updating completed status:", error);
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
     try {
@@ -59,9 +76,9 @@ const Task = () => {
                   <td className="px-4 py-2 text-center border">
                     <input
                       type="checkbox"
-                      className="form-checkbox h-4 w-4 text-blue-600"
+                      className="form-checkbox h-4 w-4 text-blue-600 cursor-pointer"
                       checked={task.completed}
-                      readOnly
+                      onChange={() => toggleCompleted(task._id, task.completed)}
                     />
                   </td>
                   <td className="px-4 py-2 text-center border space-x-2">

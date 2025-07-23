@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios"
+import { Link } from 'react-router-dom';
 
 const User = () => {
 const [user, setUsers] = useState([])
@@ -23,9 +24,9 @@ useEffect(() => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-blue-600">User Table</h2>
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md">
+          <Link to = "/addUser" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-md">
             + Add User
-          </button>
+          </Link>
         </div>
 
         {/* Table */}

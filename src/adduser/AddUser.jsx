@@ -4,14 +4,14 @@ import axios from 'axios';
 
 const AddTask = () => {
   const [title, setTitle] = useState('');
-  const [name, setUserId] = useState('');
+  const [userId, setUserId] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const taskData = {
-      name: name,
+      name: userId,
       task: title
     };
 
@@ -53,7 +53,7 @@ const AddTask = () => {
           <input
             type="text"
             className="w-full px-4 py-2 border rounded-md focus:outline-none"
-            value={name}
+            value={userId}
             onChange={(e) => setUserId(e.target.value)}
             required
           />

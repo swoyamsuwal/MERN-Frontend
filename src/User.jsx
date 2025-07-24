@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
+import Header from './Header'
 
 const Task = () => {
   const [tasks, setTasks] = useState([]);
@@ -47,6 +48,7 @@ const Task = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+      <Header />
       <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-blue-600">Task Table</h2>

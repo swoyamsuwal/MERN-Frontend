@@ -2,6 +2,7 @@ import AddUser from './adduser/AddUser';
 import './index.css';
 import User from './User';
 import UpdateTask from './updatetask/UpdateTask'; 
+import Login from './Login/Login'; 
 
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 
@@ -18,6 +19,10 @@ function App() {
     {
       path: "/update/:id",          
       element: <UpdateTask />,
+    },
+    {
+      path: "/login",          
+      element: <Login />,
     }
   ])
   return (

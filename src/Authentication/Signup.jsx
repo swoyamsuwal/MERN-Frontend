@@ -1,49 +1,43 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Signup = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
 
-  const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) =>{
     e.preventDefault();
 
-    // Fake check — replace with actual API call later
-    if (formData.name && formData.email && formData.password) {
-      navigate('/login'); // Redirect to login after sign up
-    } else {
-      setError('All fields are required.');
+    const UserData = {
+      name:name,
+      email:email,
+      password:password,
     }
-  };
+
+    try{
+      await axios.post("http://localhost:8000/api/signup", UserData);
+      console.log("User submitted:",UserData);
+      navigate("/");
+    } catch (error) {
+      console.error("Error submitting task:", error);
+    }
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-green-600">Sign Up</h2>
-
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-1 text-gray-700 font-medium">Name</label>
             <input
               type="text"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -54,8 +48,8 @@ const Signup = () => {
             <input
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />
@@ -66,8 +60,8 @@ const Signup = () => {
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               required
             />

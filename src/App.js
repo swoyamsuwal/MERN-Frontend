@@ -1,6 +1,6 @@
 import './index.css';
 import Task from './TaskTracker/Index';
-import AddUser from './TaskTracker/Add';
+import AddTask from './TaskTracker/Add';
 import UpdateTask from './TaskTracker/Edit'; 
 import Login from './Authentication/Login'; 
 import Signup from './Authentication/Signup'; 
@@ -15,7 +15,7 @@ function App() {
     },
     {
       path:"/addUser",
-      element:<AddUser/>,
+      element:<AddTask/>,
     },
     {
       path: "/update/:id",          

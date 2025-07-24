@@ -1,9 +1,9 @@
-import AddUser from './adduser/AddUser';
 import './index.css';
-import User from './User';
-import UpdateTask from './updatetask/UpdateTask'; 
-import Login from './Login/Login'; 
-import Signup from './Login/Signup'; 
+import Task from './TaskTracker/Index';
+import AddUser from './TaskTracker/Add';
+import UpdateTask from './TaskTracker/Edit'; 
+import Login from './Authentication/Login'; 
+import Signup from './Authentication/Signup'; 
 
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 
@@ -11,7 +11,7 @@ function App() {
   const route = createBrowserRouter([
     {
       path:"/",
-      element:<User />,
+      element:<Task/>
     },
     {
       path:"/addUser",

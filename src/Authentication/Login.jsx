@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; 
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,16 +18,27 @@ const Login = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError(""); // reset any existing error
 
-    // Temporary check (replace with real API call)
-    if (formData.email === 'admin@example.com' && formData.password === 'password') {
-      navigate('/'); // redirect to task page
+  try {
+    const response = await axios.post("http://localhost:8000/api/auth/login", formData);
+
+    // Save token to localStorage
+    localStorage.setItem("token", response.data.token);
+    localStorage.setItem("userName", response.data.name);
+
+    // Navigate to the main task page
+    navigate("/");
+  } catch (error) {
+    if (error.response && error.response.data.message) {
+      setError(error.response.data.message);
     } else {
-      setError('Invalid email or password');
+      setError("Login failed. Please try again.");
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">

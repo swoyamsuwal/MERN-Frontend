@@ -25,22 +25,30 @@ const UpdateTask = () => {
   }, [id]);
 
   // Handle update
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+ const handleUpdate = async (e) => {
+  e.preventDefault();
 
-    const updatedData = {
-      name: userId,
-      task: title
-    };
-
-    try {
-      await axios.put(`http://localhost:8000/api/update/task/${id}`, updatedData);
-      console.log("Task updated:", updatedData);
-      navigate('/');
-    } catch (error) {
-      console.error('Error updating task:', error);
-    }
+  const updatedData = {
+    name: userId,
+    task: title
   };
+
+  try {
+    const token = localStorage.getItem("token"); // ✅ Get token from localStorage
+
+    await axios.put(`http://localhost:8000/api/update/task/${id}`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}` // ✅ Include token
+      }
+    });
+
+    console.log("Task updated:", updatedData);
+    navigate('/');
+  } catch (error) {
+    console.error('Error updating task:', error);
+  }
+};
+
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">

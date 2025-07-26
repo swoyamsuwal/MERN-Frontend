@@ -8,43 +8,72 @@ const Task = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8000/api/TaskData");
-        setTasks(response.data.TaskData);
-      } catch (error) {
-        console.log("Error fetching data ", error);
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.get("http://localhost:8000/api/TaskData", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      setTasks(response.data.TaskData);
+    } catch (error) {
+      console.log("Error fetching data ", error);
+      if (error.response && error.response.status === 401) {
+        navigate("/login"); // Redirect to login if unauthorized
       }
-    };
-    fetchData();
-  }, []);
+    }
+  };
+  fetchData();
+}, [navigate]);
+
 
   // Toggle completed status handler
   const toggleCompleted = async (taskId, currentCompleted) => {
-    try {
-      // Send PUT request to update completed status
-      await axios.put(`http://localhost:8000/api/update/task/${taskId}`, {
-        completed: !currentCompleted
-      });
+  try {
+    const token = localStorage.getItem("token"); // get token
 
-      // Update local state so UI reflects change immediately
-      setTasks(tasks.map(task => 
-        task._id === taskId ? { ...task, completed: !currentCompleted } : task
-      ));
-    } catch (error) {
-      console.error("Error updating completed status:", error);
-    }
-  };
+    // Send PUT request to update completed status with Authorization header
+    await axios.put(
+      `http://localhost:8000/api/update/task/${taskId}`,
+      { completed: !currentCompleted },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Update local state immediately
+    setTasks(tasks.map(task =>
+      task._id === taskId ? { ...task, completed: !currentCompleted } : task
+    ));
+  } catch (error) {
+    console.error("Error updating completed status:", error);
+  }
+};
+
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this task?")) return;
-    try {
-      await axios.delete(`http://localhost:8000/api/delete/task/${id}`);
-      setTasks(tasks.filter(task => task._id !== id));
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
+  if (!window.confirm("Are you sure you want to delete this task?")) return;
+
+  try {
+    const token = localStorage.getItem("token"); // get token
+
+    await axios.delete(`http://localhost:8000/api/delete/task/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setTasks(tasks.filter(task => task._id !== id));
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

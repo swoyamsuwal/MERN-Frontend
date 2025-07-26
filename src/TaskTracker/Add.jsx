@@ -7,22 +7,30 @@ const AddTask = () => {
   const [userId, setUserId] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const taskData = {
-      name: userId,
-      task: title
-    };
-
-    try {
-      await axios.post("http://localhost:8000/api/task", taskData);
-      console.log("Task submitted:", taskData);
-      navigate("/");
-    } catch (error) {
-      console.error("Error submitting task:", error);
-    }
+  const taskData = {
+    name: userId,
+    task: title
   };
+
+  try {
+    const token = localStorage.getItem("token"); // ✅ Get token
+
+    await axios.post("http://localhost:8000/api/task", taskData, {
+      headers: {
+        Authorization: `Bearer ${token}` // ✅ Attach token here
+      }
+    });
+
+    console.log("Task submitted:", taskData);
+    navigate("/");
+  } catch (error) {
+    console.error("Error submitting task:", error);
+  }
+};
+
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">

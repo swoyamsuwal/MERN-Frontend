@@ -11,6 +11,10 @@ function App() {
   const route = createBrowserRouter([
     {
       path:"/",
+      element:<Login/>
+    },
+    {
+      path:"/task",
       element:<Task/>
     },
     {

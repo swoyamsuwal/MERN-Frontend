@@ -25,7 +25,7 @@ const AddTask = () => {
     });
 
     console.log("Task submitted:", taskData);
-    navigate("/");
+    navigate("/task");
   } catch (error) {
     console.error("Error submitting task:", error);
   }

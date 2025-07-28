@@ -30,7 +30,7 @@ const Login = () => {
     localStorage.setItem("userName", response.data.name);
 
     // Navigate to the main task page
-    navigate("/");
+    navigate("/task");
   } catch (error) {
     if (error.response && error.response.data.message) {
       setError(error.response.data.message);

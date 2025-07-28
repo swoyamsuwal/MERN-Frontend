@@ -43,7 +43,7 @@ const UpdateTask = () => {
     });
 
     console.log("Task updated:", updatedData);
-    navigate('/');
+    navigate('/task');
   } catch (error) {
     console.error('Error updating task:', error);
   }

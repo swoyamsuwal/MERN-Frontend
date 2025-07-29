@@ -18,6 +18,10 @@ const Login = () => {
     }));
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:8000/api/auth/google";
+  };
+
   const handleSubmit = async (e) => {
   e.preventDefault();
   setError(""); // reset any existing error
@@ -85,11 +89,14 @@ const Login = () => {
         Don't have an account?{" "}
         <Link to="/signup" className="text-green-600 hover:underline">Sign Up</Link>
       </p>
-<div className="mt-6">
-  <button className="flex items-center justify-center w-full border border-gray-300 rounded-lg py-2 hover:bg-gray-100 transition">
-    <span className="text-gray-700 font-medium">Login with Google</span>
-  </button>
-</div>
+      <div className="mt-6">
+        <button
+                  onClick={handleGoogleLogin}
+                  className="flex items-center justify-center w-full border border-gray-300 rounded-lg py-2 hover:bg-gray-100 transition"
+                >
+                  <span className="text-gray-700 font-medium">Login with Google</span>
+                </button>
+      </div>
 
       </div>
       

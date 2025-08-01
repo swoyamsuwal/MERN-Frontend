@@ -7,12 +7,23 @@ const Task = () => {
   const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
+ useEffect(() => {
+  // ✅ 1. Extract token from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get("token");
+
+  // ✅ 2. If token exists in URL, store it
+  if (tokenFromUrl) {
+    localStorage.setItem("token", tokenFromUrl);
+    // Optional: Clean the URL
+    window.history.replaceState({}, document.title, "/task");
+  }
+
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.get("http://localhost:8000/api/TaskData", {
+      const response = await axios.get("http://localhost:8000/api/taskdata", {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -1,94 +1,126 @@
 import React, { useEffect, useState } from 'react';
 import axios from "axios";
 import { Link, useNavigate } from 'react-router-dom';
-import Header from '../Header'
+import Header from '../Header';
 
 const Task = () => {
   const [tasks, setTasks] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState(null);
   const navigate = useNavigate();
 
- useEffect(() => {
-  // ✅ 1. Extract token from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const tokenFromUrl = urlParams.get("token");
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("token");
+    const nameFromUrl = urlParams.get("name");
 
-  // ✅ 2. If token exists in URL, store it
-  if (tokenFromUrl) {
-    localStorage.setItem("token", tokenFromUrl);
-    // Optional: Clean the URL
-    window.history.replaceState({}, document.title, "/task");
-  }
+    if (tokenFromUrl) {
+      localStorage.setItem("token", tokenFromUrl);
+    }
+    if (nameFromUrl) {
+      localStorage.setItem("userName", nameFromUrl);
+    }
 
-  const fetchData = async () => {
+    if (tokenFromUrl || nameFromUrl) {
+      window.history.replaceState({}, document.title, "/task");
+    }
+
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await axios.get("http://localhost:8000/api/taskdata", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        setTasks(response.data.TaskData);
+      } catch (error) {
+        console.log("Error fetching data ", error);
+        if (error.response && error.response.status === 401) {
+          navigate("/login");
+        }
+      }
+    };
+    fetchData();
+  }, [navigate]);
+
+  const toggleCompleted = async (taskId, currentCompleted) => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await axios.get("http://localhost:8000/api/taskdata", {
-        headers: {
-          Authorization: `Bearer ${token}`
+      await axios.put(
+        `http://localhost:8000/api/update/task/${taskId}`,
+        { completed: !currentCompleted },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
 
-      setTasks(response.data.TaskData);
+      setTasks(tasks.map(task =>
+        task._id === taskId ? { ...task, completed: !currentCompleted } : task
+      ));
     } catch (error) {
-      console.log("Error fetching data ", error);
-      if (error.response && error.response.status === 401) {
-        navigate("/login"); // Redirect to login if unauthorized
-      }
+      console.error("Error updating completed status:", error);
     }
   };
-  fetchData();
-}, [navigate]);
 
+  const confirmDelete = (id) => {
+    setTaskToDelete(id);
+    setShowModal(true);
+  };
 
-  // Toggle completed status handler
-  const toggleCompleted = async (taskId, currentCompleted) => {
-  try {
-    const token = localStorage.getItem("token"); // get token
+  const handleDeleteConfirmed = async () => {
+    try {
+      const token = localStorage.getItem("token");
 
-    // Send PUT request to update completed status with Authorization header
-    await axios.put(
-      `http://localhost:8000/api/update/task/${taskId}`,
-      { completed: !currentCompleted },
-      {
+      await axios.delete(`http://localhost:8000/api/delete/task/${taskToDelete}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
-    );
+      });
 
-    // Update local state immediately
-    setTasks(tasks.map(task =>
-      task._id === taskId ? { ...task, completed: !currentCompleted } : task
-    ));
-  } catch (error) {
-    console.error("Error updating completed status:", error);
-  }
-};
-
-
-  const handleDelete = async (id) => {
-  if (!window.confirm("Are you sure you want to delete this task?")) return;
-
-  try {
-    const token = localStorage.getItem("token"); // get token
-
-    await axios.delete(`http://localhost:8000/api/delete/task/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    setTasks(tasks.filter(task => task._id !== id));
-  } catch (error) {
-    console.error("Error deleting task:", error);
-  }
-};
-
+      setTasks(tasks.filter(task => task._id !== taskToDelete));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    } finally {
+      setShowModal(false);
+      setTaskToDelete(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <Header />
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center transition-opacity">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-80 transform scale-100 transition-transform duration-200">
+            <h2 className="text-lg font-semibold mb-4 text-gray-800">
+              Are you sure you want to delete this task?
+            </h2>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded"
+                onClick={handleDeleteConfirmed}
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-blue-600">Task Table</h2>
@@ -131,7 +163,7 @@ const Task = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(task._id)}
+                      onClick={() => confirmDelete(task._id)}
                       className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
                     >
                       Delete
